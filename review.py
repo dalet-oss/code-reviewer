@@ -168,7 +168,9 @@ for i in range(len(args.llm)):
 
     if args.mode == "comments" and not can_post_comments:
         logging.info("Comments mode requested, but this VCS does not support comments. Issues were printed to stdout.")
-    elif args.mode == "comments" and pr.state.lower() == "open" and review_result and review_result.reviews:
+    elif args.mode == "comments" and pr.state.lower() != "open":
+        logging.info(f"Comments mode: PR state is {pr.state}, no comments posted.")
+    elif args.mode == "comments" and review_result and review_result.reviews:
         try:
             head_commit = vcsp.get_commit(args.repository, pr.head_sha)
         except Exception as e:
@@ -217,5 +219,7 @@ for i in range(len(args.llm)):
                 except Exception as e:
                     logging.error(f"Error posting comment on {review.file}: {str(e)}")
     elif args.mode == "comments":
-        logging.info("Comments mode: PR is closed, no comments posted.")
+        logging.info("Comments mode: no issues to post.")
     break
+else:
+    logging.error("No LLM produced a review.")

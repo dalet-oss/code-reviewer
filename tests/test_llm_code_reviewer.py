@@ -418,3 +418,19 @@ def test_review_pr_logs_invalid_json_details(mock_vcsp, mock_llm, sample_pr, cap
     assert "JSON parse error near line 2, column 1" in caplog.text
     assert "Cleaned LLM response that failed JSON parsing" in caplog.text
     assert '[{"file":"other.py","line":1,"comments":[]}]' in caplog.text
+
+
+def test_review_pr_raises_when_llm_returns_no_answer(mock_vcsp, mock_llm, sample_pr):
+    diff_content = """--- a/main.py
++++ b/main.py
+@@ -1,2 +1,2 @@
+-old = 1
++new = 1
+"""
+    mock_vcsp.get_files_in_pr.return_value = [PRFile(filename="main.py", patch=diff_content)]
+    mock_vcsp.get_file_content.side_effect = FileNotFoundError("missing rules")
+    mock_llm.answer.return_value = None
+    reviewer = LLMCodeReviewer(llm=mock_llm, vcsp=mock_vcsp, full_context=False, deep=False)
+
+    with pytest.raises(RuntimeError, match="returned no answer"):
+        reviewer.review_pr(sample_pr, "user/repo", 1)

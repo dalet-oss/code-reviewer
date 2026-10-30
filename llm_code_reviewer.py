@@ -335,6 +335,9 @@ class LLMCodeReviewer:
                 logging.info("No reviewable diff content remained after filtering. Skipping LLM API call.")
                 return None
 
+            if llm_answer is None:
+                raise RuntimeError(f"{type(self.llm).__name__} returned no answer (see errors above)")
+
             if llm_answer:
                 if llm_answer.response == "Long_Request" and self.full_context:
                     self.full_context = False #retrun with less context

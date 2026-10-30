@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM python:3.12-slim
 
 # Allow passing the key at build time: --build-arg OPENAI_API_KEY=...
 ARG OPENAI_API_KEY
@@ -10,8 +10,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
 #    apt-get install -y python3 python3-pip git subversion iputils-ping curl wget traceroute dnsutils net-tools vim && \
-    apt-get install -y python3 python3-pip git subversion && \
-    apt-get clean && \
+    apt-get install -y --no-install-recommends git subversion && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -25,4 +24,4 @@ RUN rm -rf /app/docker
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 
-ENTRYPOINT ["/app/localEntrypoint.sh", "/usr/bin/python3", "/app/review.py", "never", "0", "--vcsp", "local", "--deep", "--full-context", "--llm", "chatgpt", "--mode", "issues"]
+ENTRYPOINT ["/app/localEntrypoint.sh", "python3", "/app/review.py", "never", "0", "--vcsp", "local", "--deep", "--full-context", "--llm", "chatgpt", "--mode", "issues"]
