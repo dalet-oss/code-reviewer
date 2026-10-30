@@ -2,6 +2,12 @@
 All notable changes to **AI Code Reviewer** will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to semantic versioning.
+## [2.1.6] - 2026-10-30
+- Upgraded Docker images (`Dockerfile`, `Dockerfile.local`) to `python:3.12-slim`, removing the `google.api_core` Python 3.10 deprecation warning.
+- Migrated Gemini integration from the deprecated `google-generativeai` package to `google-genai`; missing token usage data no longer breaks the response handling.
+- Fixed misleading "PR is closed" message in comments mode; the log now shows the actual PR state, or that there are no issues to post.
+- LLM failures (e.g. API usage limits) are no longer reported as "No issues found": the next LLM from `--llm` is tried, and an error is logged if none produced a review (exit code stays 0, so pipelines are not failed).
+
 ## [2.1.5] - 2026-04-27
 - Fixed new/deleted file detection when diff helpers receive raw patch strings, preventing character-by-character scanning and avoiding full-context content fetches for deleted files.
 - Improved Claude-oriented review prompting to keep feedback limited to changed lines and concrete issues only.
